@@ -133,6 +133,10 @@
 
       const terminal = document.getElementById('terminal');
       terminal.appendChild(output);
+      terminal.scrollTo({
+        top: terminal.scrollHeight,
+        behavior: 'smooth',
+      });
     });
   </script>
 </html>
