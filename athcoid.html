@@ -5,7 +5,7 @@
     }
 
     #terminal {
-      width: 80%;
+      width: 90%;
       margin: 2rem auto;
       background-color: #000;
       padding: 0.5rem 1rem;
@@ -14,16 +14,28 @@
     }
 
     .unit {
-      width: 90%;
-      margin: 0.5rem auto;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      width: 97%;
+      border-bottom: 1px #040 solid;
+      margin: 0 auto;
       padding: 0.5rem 1rem;
       color: #ddd;
       background-color: #000;
-      border: 1px  solid #040;
       font-family: monospace;
     }
 
-    .unit.error {
+    .unit:first-child {
+      border-top: 1px #040 solid;
+    }
+
+    .unit .status {
+      margin-right: 1em;
+      margin-left: 0;
+    }
+
+    .unit .body.error {
       color: #f88;
     }
 
@@ -60,9 +72,6 @@
   </style>
 
   <div id='terminal'>
-    <div class='unit'>
-      This is a terminal unit.
-    </div>
   </div>
 
   <div id='command-line'>
@@ -76,9 +85,9 @@
 
     const commandant = {
       marshal: function (str) {
-        const [ arg0, rest ] = str.split(/\s+/, 2);
+        const match = str.match(/^(\S+)(?:\s*|\s+(.+))?$/);
 
-        return { arg0, rest };
+        return { arg0: match[1], rest: match[2] };
       },
     };
 
@@ -110,8 +119,40 @@
       },
     };
 
+    const terminal = {
+      el:  document.getElementById('terminal'),
+      buildOutputUnit: function (spec) {
+        const output = document.createElement('div');
+        output.classList.add('unit');
+
+        const status = document.createElement('div');
+        status.classList.add('status');
+        const body   = document.createElement('div');
+        body.classList.add('body');
+
+        if (spec.class) body.classList.add(spec.class);
+
+        status.appendChild( document.createTextNode("⦻") );
+
+        body.appendChild( document.createTextNode(spec.text));
+
+        output.appendChild(status);
+        output.appendChild(body);
+
+        return output;
+      },
+      showResult: function (spec) {
+        const output = this.buildOutputUnit(spec);
+        this.el.appendChild(output);
+        this.el.scrollTo({
+          top: terminal.el.scrollHeight,
+          behavior: 'smooth',
+        });
+      },
+    };
+
     cli.addEventListener('keyup', (event) => {
-      if (event.code !== 'Enter') return;
+      if (event.key !== 'Enter') return;
 
       const text = cli.value;
 
@@ -124,19 +165,7 @@
       console.log("command: ", command);
 
       const result = actor.execute(command);
-
-      const output = document.createElement('div');
-      output.classList.add('unit');
-      if (result.class) output.classList.add(result.class);
-
-      output.appendChild( document.createTextNode(result.text));
-
-      const terminal = document.getElementById('terminal');
-      terminal.appendChild(output);
-      terminal.scrollTo({
-        top: terminal.scrollHeight,
-        behavior: 'smooth',
-      });
+      terminal.showResult(result);
     });
   </script>
 </html>
