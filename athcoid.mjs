@@ -10,19 +10,20 @@ const CommandParser = {
   },
 };
 
-export function Commando (commands) {
-  this.commands = commands;
-}
+export class Commando {
+  constructor (commands) {
+    this.commands = commands;
+  }
 
-Commando.prototype = {
-  unknown: function (command) {
+  unknown (command) {
     return {
       class: "error",
       text : `Command ${command.arg0} is unknown.`,
       command
     }
-  },
-  execute: function (command) {
+  }
+
+  execute (command) {
     const handler = this.commands[command.arg0];
 
     if (! handler) return this.unknown(command);
@@ -31,16 +32,15 @@ Commando.prototype = {
     result.command = command;
 
     return result;
-  },
-  commands: { },
-};
-
-function OutputDevice (el) {
-  this.el = el;
+  }
 }
 
-OutputDevice.prototype = {
-  buildOutputUnit: function (spec) {
+class OutputDevice {
+  constructor (el) {
+    this.el = el;
+  }
+
+  buildOutputUnit (spec) {
     const output = document.createElement('div');
     output.classList.add('unit');
 
@@ -60,16 +60,17 @@ OutputDevice.prototype = {
     output.appendChild(body);
 
     return output;
-  },
-  showResult: function (spec) {
+  }
+
+  showResult (spec) {
     const output = this.buildOutputUnit(spec);
     this.el.appendChild(output);
     this.el.scrollTo({
       top: this.el.scrollHeight,
       behavior: 'smooth',
     });
-  },
-};
+  }
+}
 
 export function Terminal ({ terminalRoot, commando }) {
   const output = new OutputDevice(terminalRoot.querySelector('.output'));
