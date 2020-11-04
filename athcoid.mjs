@@ -1,5 +1,5 @@
-const commandant = {
-  marshal: function (str) {
+const CommandParser = {
+  parse: function (str) {
     const match = str.match(/^(\S+)(?:\s*|\s+(.+))?$/);
 
     return {
@@ -10,7 +10,11 @@ const commandant = {
   },
 };
 
-const actor = {
+export function Commando (commands) {
+  this.commands = commands;
+}
+
+Commando.prototype = {
   unknown: function (command) {
     return {
       class: "error",
@@ -28,18 +32,7 @@ const actor = {
 
     return result;
   },
-  commands: {
-    help: function (command) {
-      return {
-        text: "Known commands: echo, help",
-      };
-    },
-    echo: function (command) {
-      return {
-        text: `ECHO: ${command.rest}`,
-      }
-    },
-  },
+  commands: { },
 };
 
 function OutputDevice (el) {
@@ -78,10 +71,11 @@ OutputDevice.prototype = {
   },
 };
 
-export function Terminal (root) {
-  const output = this.output = new OutputDevice(root.querySelector('.output'));
+export function Terminal ({ terminalRoot, commando }) {
+  const output = new OutputDevice(terminalRoot.querySelector('.output'));
+  this.output = output;
 
-  this.cli = root.querySelector('.cli');
+  this.cli = terminalRoot.querySelector('.cli');
 
   this.cli.addEventListener('keyup', function (event) {
     if (event.key !== 'Enter') return;
@@ -92,8 +86,8 @@ export function Terminal (root) {
 
     this.value = "";
 
-    const command = commandant.marshal(text);
-    const result  = actor.execute(command);
+    const command = CommandParser.parse(text);
+    const result  = commando.execute(command);
 
     output.showResult(result);
   });
