@@ -82,7 +82,15 @@ class OutputDevice {
     return output;
   }
 
-  async showResult (result, arg) {
+  inflateResult (result) {
+    if (result.constructor === String) {
+      return { text: result }
+    }
+
+    return result;
+  }
+
+  async showResult (resultPromise, arg) {
     const ph = this.buildPlaceHolder(arg.command);
     this.el.appendChild(ph);
     this.el.scrollTo({
@@ -90,7 +98,8 @@ class OutputDevice {
       behavior: 'smooth',
     });
 
-    const output = this.buildOutputUnit(await result, arg.command);
+    const result = this.inflateResult(await resultPromise);
+    const output = this.buildOutputUnit(result, arg.command);
     ph.replaceWith(output);
   }
 }

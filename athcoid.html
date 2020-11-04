@@ -16,25 +16,17 @@
 
     const commando = new Commando({
       help: function (command) {
-        return {
-          text: "Known commands: echo, help",
-        };
+        return "Known commands: echo, help";
       },
       echo: function (command) {
-        return {
-          text: `ECHO: ${command.rest}`,
-        }
+        return `ECHO: ${command.rest}`;
       },
       sleep: async function (command) {
         const sleep = new Promise((resolve) => {
           setTimeout(() => resolve("Success!"), 5000);
         });
 
-        return sleep.then(() => {
-          return {
-            text: "I slept for a bit.",
-          }
-        });
+        return sleep.then(() => "I slept for a bit.");
       },
     });
 
