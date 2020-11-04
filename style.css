@@ -37,7 +37,7 @@ html {
   color: #f88;
 }
 
-#command-line {
+.command-line {
   display: block;
   width: 80%;
   margin: 1rem auto;
@@ -47,7 +47,7 @@ html {
   font-family: monospace;
 }
 
-#prompt {
+.prompt {
   color: #0d0;
   font-size: 150%;
 }
