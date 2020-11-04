@@ -27,7 +27,10 @@
       },
     });
 
-    const terminalRoot = document.querySelector('#terminal');
-    const terminal = new Terminal({ terminalRoot, commando });
+    const terminal = new Terminal({
+      commando,
+      input:  document.querySelector('#terminal .cli'),
+      output: document.querySelector('#terminal .output'),
+    });
   </script>
 </html>

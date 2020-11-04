@@ -72,13 +72,13 @@ class OutputDevice {
   }
 }
 
-export function Terminal ({ terminalRoot, commando }) {
-  const output = new OutputDevice(terminalRoot.querySelector('.output'));
+export function Terminal ({ commando, input: inputEl, output: outputEl }) {
+  const output = new OutputDevice(outputEl);
+
+  this.input  = inputEl;
   this.output = output;
 
-  this.cli = terminalRoot.querySelector('.cli');
-
-  this.cli.addEventListener('keyup', function (event) {
+  this.input.addEventListener('keyup', function (event) {
     if (event.key !== 'Enter') return;
 
     const text = this.value;
