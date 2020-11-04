@@ -37,6 +37,18 @@ html {
   color: #f88;
 }
 
+.unit .body.loading {
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-duration: 1s;
+  animation-name: pulse;
+}
+
+@keyframes pulse {
+  from { color: #888; }
+  to   { color: #fff; }
+}
+
 .command-line {
   display: block;
   width: 80%;

@@ -29,7 +29,6 @@ export class Commando {
     if (! handler) return this.unknown(command);
 
     const result = await handler(command);
-    result.command = command;
 
     return result;
   }
@@ -40,7 +39,7 @@ class OutputDevice {
     this.el = el;
   }
 
-  buildPlaceHolder () {
+  buildPlaceHolder (command) {
     const output = document.createElement('div');
     output.classList.add('unit');
 
@@ -48,9 +47,10 @@ class OutputDevice {
     status.classList.add('status');
     const body   = document.createElement('div');
     body.classList.add('body');
+    body.classList.add('loading');
 
     status.appendChild( document.createTextNode("…") );
-    // status.setAttribute('title', spec.command.input);
+    status.setAttribute('title', command.input);
 
     body.appendChild( document.createTextNode("...") );
 
@@ -60,7 +60,7 @@ class OutputDevice {
     return output;
   }
 
-  buildOutputUnit (spec) {
+  buildOutputUnit (spec, command) {
     const output = document.createElement('div');
     output.classList.add('unit');
 
@@ -72,7 +72,7 @@ class OutputDevice {
     if (spec.class) body.classList.add(spec.class);
 
     status.appendChild( document.createTextNode("⦻") );
-    status.setAttribute('title', spec.command.input);
+    status.setAttribute('title', command.input);
 
     body.appendChild( document.createTextNode(spec.text));
 
@@ -82,15 +82,15 @@ class OutputDevice {
     return output;
   }
 
-  async showResult (spec) {
-    const ph = this.buildPlaceHolder();
+  async showResult (result, arg) {
+    const ph = this.buildPlaceHolder(arg.command);
     this.el.appendChild(ph);
     this.el.scrollTo({
       top: this.el.scrollHeight,
       behavior: 'smooth',
     });
 
-    const output = this.buildOutputUnit(await spec);
+    const output = this.buildOutputUnit(await result, arg.command);
     ph.replaceWith(output);
   }
 }
@@ -113,6 +113,6 @@ export function Terminal ({ commando, input: inputEl, output: outputEl }) {
     const command = CommandParser.parse(text);
     const result  = commando.execute(command);
 
-    output.showResult(result);
+    output.showResult(result, { command });
   });
 }
