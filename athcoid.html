@@ -87,7 +87,11 @@
       marshal: function (str) {
         const match = str.match(/^(\S+)(?:\s*|\s+(.+))?$/);
 
-        return { arg0: match[1], rest: match[2] };
+        return {
+          arg0: match[1],
+          rest: match[2],
+          input: str,
+        };
       },
     };
 
@@ -103,7 +107,10 @@
 
         if (! handler) return this.unknown(command);
 
-        return handler(command);
+        const result = handler(command);
+        result.command = command;
+
+        return result;
       },
       commands: {
         help: function (command) {
@@ -133,6 +140,7 @@
         if (spec.class) body.classList.add(spec.class);
 
         status.appendChild( document.createTextNode("⦻") );
+        status.setAttribute('title', spec.command.input);
 
         body.appendChild( document.createTextNode(spec.text));
 
