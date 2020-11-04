@@ -15,15 +15,26 @@
     import {Commando, Terminal} from './athcoid.mjs';
 
     const commando = new Commando({
-      help: function (command) {
+      help: async function (command) {
         return {
           text: "Known commands: echo, help",
         };
       },
-      echo: function (command) {
+      echo: async function (command) {
         return {
           text: `ECHO: ${command.rest}`,
         }
+      },
+      sleep: async function (command) {
+        const sleep = new Promise((resolve) => {
+          setTimeout(() => resolve("Success!"), 5000);
+        });
+
+        return sleep.then(() => {
+          return {
+            text: "I slept for a bit.",
+          }
+        });
       },
     });
 

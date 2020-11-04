@@ -15,7 +15,7 @@ export class Commando {
     this.commands = commands;
   }
 
-  unknown (command) {
+  async unknown (command) {
     return {
       class: "error",
       text : `Command ${command.arg0} is unknown.`,
@@ -23,12 +23,12 @@ export class Commando {
     }
   }
 
-  execute (command) {
+  async execute (command) {
     const handler = this.commands[command.arg0];
 
     if (! handler) return this.unknown(command);
 
-    const result = handler(command);
+    const result = await handler(command);
     result.command = command;
 
     return result;
@@ -38,6 +38,26 @@ export class Commando {
 class OutputDevice {
   constructor (el) {
     this.el = el;
+  }
+
+  buildPlaceHolder () {
+    const output = document.createElement('div');
+    output.classList.add('unit');
+
+    const status = document.createElement('div');
+    status.classList.add('status');
+    const body   = document.createElement('div');
+    body.classList.add('body');
+
+    status.appendChild( document.createTextNode("…") );
+    // status.setAttribute('title', spec.command.input);
+
+    body.appendChild( document.createTextNode("...") );
+
+    output.appendChild(status);
+    output.appendChild(body);
+
+    return output;
   }
 
   buildOutputUnit (spec) {
@@ -62,13 +82,16 @@ class OutputDevice {
     return output;
   }
 
-  showResult (spec) {
-    const output = this.buildOutputUnit(spec);
-    this.el.appendChild(output);
+  async showResult (spec) {
+    const ph = this.buildPlaceHolder();
+    this.el.appendChild(ph);
     this.el.scrollTo({
       top: this.el.scrollHeight,
       behavior: 'smooth',
     });
+
+    const output = this.buildOutputUnit(await spec);
+    ph.replaceWith(output);
   }
 }
 
@@ -78,7 +101,7 @@ export function Terminal ({ commando, input: inputEl, output: outputEl }) {
   this.input  = inputEl;
   this.output = output;
 
-  this.input.addEventListener('keyup', function (event) {
+  this.input.addEventListener('keyup', async function (event) {
     if (event.key !== 'Enter') return;
 
     const text = this.value;
